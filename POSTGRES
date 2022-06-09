@@ -1,0 +1,162 @@
+
+BEGIN;
+
+
+CREATE TABLE IF NOT EXISTS public.characteristics
+(
+    id integer NOT NULL,
+    element_id integer,
+    characteristic_name character varying(100) COLLATE pg_catalog."default",
+    value text COLLATE pg_catalog."default",
+    CONSTRAINT charasteristics_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.code_characteristics
+(
+    id integer NOT NULL,
+    characteristic_name character varying(100) COLLATE pg_catalog."default",
+    data_type character varying(100) COLLATE pg_catalog."default",
+    characteristic_id integer,
+    CONSTRAINT code_characteristics_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.code_parameters
+(
+    id integer NOT NULL,
+    parameter_id integer,
+    parameter_name character varying(100) COLLATE pg_catalog."default",
+    CONSTRAINT code_parameters_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.codes
+(
+    id integer NOT NULL,
+    code_ch_id integer,
+    code_parameter_id integer,
+    code_name character varying(255) COLLATE pg_catalog."default",
+    description character varying(255) COLLATE pg_catalog."default",
+    CONSTRAINT codes_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.devices
+(
+    id integer NOT NULL,
+    device_name character varying(100) COLLATE pg_catalog."default",
+    description character varying(100) COLLATE pg_catalog."default",
+    CONSTRAINT device_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.elements
+(
+    id integer NOT NULL,
+    device_id integer,
+    description character varying(255) COLLATE pg_catalog."default",
+    element_name character varying(100) COLLATE pg_catalog."default",
+    applicable_versions text COLLATE pg_catalog."default",
+    CONSTRAINT elements_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.parameters
+(
+    id integer NOT NULL,
+    process_id integer,
+    parameter_name character varying(100) COLLATE pg_catalog."default",
+    value text COLLATE pg_catalog."default",
+    CONSTRAINT parameters_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.processes
+(
+    id integer NOT NULL,
+    process_name character varying(100) COLLATE pg_catalog."default",
+    applicable_versions text COLLATE pg_catalog."default",
+    device_id integer,
+    CONSTRAINT processes_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.results
+(
+    id integer NOT NULL,
+    code_id integer,
+    value text COLLATE pg_catalog."default",
+    CONSTRAINT results_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.versions
+(
+    id integer NOT NULL,
+    device_id integer,
+    version_name character varying(100) COLLATE pg_catalog."default",
+    CONSTRAINT versions_pkey PRIMARY KEY (id)
+);
+
+ALTER TABLE IF EXISTS public.characteristics
+    ADD CONSTRAINT characteristics_element_id_fkey FOREIGN KEY (element_id)
+    REFERENCES public.elements (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
+
+ALTER TABLE IF EXISTS public.code_characteristics
+    ADD CONSTRAINT code_characteristics_characteristic_id_fkey FOREIGN KEY (characteristic_id)
+    REFERENCES public.characteristics (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
+
+ALTER TABLE IF EXISTS public.code_parameters
+    ADD CONSTRAINT code_parameters_parameter_id_fkey FOREIGN KEY (parameter_id)
+    REFERENCES public.parameters (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
+
+ALTER TABLE IF EXISTS public.codes
+    ADD CONSTRAINT codes_code_ch_id_fkey FOREIGN KEY (code_ch_id)
+    REFERENCES public.code_characteristics (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
+
+ALTER TABLE IF EXISTS public.codes
+    ADD CONSTRAINT codes_code_parameter_id_fkey FOREIGN KEY (code_parameter_id)
+    REFERENCES public.code_parameters (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
+
+ALTER TABLE IF EXISTS public.elements
+    ADD CONSTRAINT elements_device_id_fkey FOREIGN KEY (device_id)
+    REFERENCES public.devices (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
+
+ALTER TABLE IF EXISTS public.parameters
+    ADD CONSTRAINT parameters_process_id_fkey FOREIGN KEY (process_id)
+    REFERENCES public.processes (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
+
+ALTER TABLE IF EXISTS public.processes
+    ADD CONSTRAINT processes_device_id_fkey FOREIGN KEY (device_id)
+    REFERENCES public.devices (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
+
+ALTER TABLE IF EXISTS public.results
+    ADD CONSTRAINT results_code_id_fkey FOREIGN KEY (code_id)
+    REFERENCES public.codes (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
+
+ALTER TABLE IF EXISTS public.versions
+    ADD CONSTRAINT versions_device_id_fkey FOREIGN KEY (device_id)
+    REFERENCES public.devices (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
+END;
