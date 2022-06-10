@@ -1,6 +1,8 @@
 from tkinter import *
 import psycopg2
 import os
+
+import results
 import show
 
 
@@ -11,7 +13,7 @@ def view():
 
     cur.execute(postgreSQL_select_Query, (int(code_id.get()),))
     if(int(code_id.get()) == 0):
-        show.CodeOne()
+        show.CodeOne(results.filename)
     else:
         show.CodeTwo()
     conn.commit()
